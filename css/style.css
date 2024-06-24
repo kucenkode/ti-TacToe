@@ -1,1 +1,73 @@
+html {
+    box-sizing: border-box;
+}
 
+*, ::after, ::before {
+    box-sizing: inherit;
+}
+
+body {
+    font-weight: 700;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+}
+
+:root {
+    /* Главная страница */
+    --logo-color: #ef2666;
+    --bg-color: #ffe6e3;
+
+    /* Кнопка для начала игры */
+    --start-btn-color: #ff417e;
+    --start-btn-color-hover: #dd2761;
+}
+
+.dm-serif-display-regular {
+    font-family: "DM Serif Display", serif;
+    font-weight: 600;
+    font-style: normal;
+}
+  
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    width: 100%;
+    max-width: 1728px;
+    height: 100dvh;
+    background-color: var(--bg-color);
+}
+
+.buttons {
+    width: 5vw;
+    height: auto;
+    font-size: 2.6vmin;
+    text-align: center;
+    border: none;
+    border-radius: 15px;
+    padding: 0.3%;
+    box-shadow: 0 5px 5px rgba(0,0,0,0.2);
+    font-family: "Source Sans 3", sans-serif;
+}
+
+#logo {
+    font-size: 5vmin;
+    color: var(--logo-color);
+}
+
+#start-game-button {
+    background-color: var(--start-btn-color);
+    color: white;
+    
+    &:hover {
+        background-color: var(--start-btn-color-hover);
+    }
+}
+
+#tic-tac-toe-img {
+    width: 26vmin;
+    height: auto;
+}
