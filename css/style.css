@@ -7,15 +7,24 @@ html {
 }
 
 body {
+    font-family: "Signika", sans-serif;
     font-weight: 700;
     margin: 0;
     padding: 0;
     background-color: var(--bg-color);
 }
 
+
+* {
+    -webkit-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    -transition: all 0.2s;
+}
+
 :root {
-    /* Главная страница */
     --logo-color: #ef2666;
+    --text-color: #ff719e;
     --bg-color: #ffe6e3;
 }
 
@@ -25,6 +34,10 @@ body {
     font-style: normal;
 }
 
+h1 {
+    color: var(--text-color);
+}
+
 .buttons {
     width: 5vw;
     height: auto;
@@ -32,12 +45,7 @@ body {
     text-align: center;
     border: none;
     border-radius: 10px;
-    padding: 1%;
+    padding: 5%;
     box-shadow: 0 5px 5px rgba(0,0,0,0.2);
-    font-family: "Source Sans 3", sans-serif;
-}
-
-#logo {
-    font-size: 5vmin;
-    color: var(--logo-color);
+    text-align: center;
 }

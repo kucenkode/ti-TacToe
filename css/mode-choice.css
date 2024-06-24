@@ -1,0 +1,50 @@
+.wrapper {
+    margin: auto;
+    grid-template-rows: 15vh 20vh 40vh;
+}
+
+.game-mode {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    justify-items: center;
+}
+
+form {
+    font-size: 1.7vmin;
+    margin: auto;
+}
+
+.game-mode button {
+    width: 30vmin;
+    height: 30vmin;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-size: contain;
+    border: none;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+
+    &:hover {
+        width: 31vmin;
+        height: 31vmin;
+    }
+}
+
+#input-create-game-mode {
+    width: 15vmin;
+    height: 4vmin;
+    font-size: 2.2vmin;
+    text-align: center;
+    border-color: #ef2666;
+    border-radius: 5px;
+
+    &:focus {
+        outline: none;
+    }
+
+    &::placeholder {
+        color: var(--text-color);
+        font-weight: 700;
+    }
+}

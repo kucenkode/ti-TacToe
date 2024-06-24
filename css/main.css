@@ -28,6 +28,12 @@
     }
 }
 
+#logo {
+    font-size: 5vmin;
+    color: var(--logo-color);
+    cursor: pointer;
+}
+
 #tic-tac-toe-img {
     width: 26vmin;
     height: auto;

@@ -1,4 +1,37 @@
 :root {
-    
+    --header-bg: #FFD1CC;
 }
 
+.wrapper {
+    display: grid;
+    grid-template-rows: 10vh 90vh;
+    width: 100%;
+    max-width: 1728px;
+    margin: auto;
+}
+
+#logo {
+    font-size: 3vh;
+    color: var(--logo-color);
+    cursor: pointer;
+}
+
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 10vh;
+    background-color: transparent;
+}
+
+.game-space {
+    max-width: 90%;
+    max-height: 90%;
+    background-color: aqua;
+}
+
+.cell {
+    border-color: black;
+    background-color: blue;
+}
