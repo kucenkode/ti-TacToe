@@ -14,6 +14,7 @@
     font-size: 3vh;
     color: var(--logo-color);
     cursor: pointer;
+    text-decoration: none;
 }
 
 .header {
@@ -25,13 +26,13 @@
     background-color: transparent;
 }
 
-.game-space {
-    max-width: 90%;
-    max-height: 90%;
-    background-color: aqua;
+.board {
+    width: 60vmin;
+    height: 60vmin;
+    margin: auto;
 }
 
 .cell {
-    border-color: black;
-    background-color: blue;
+    background-color: #f4ba5e;
 }
+
