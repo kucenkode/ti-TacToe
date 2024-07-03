@@ -14,8 +14,12 @@
         <header class="header">
             <a href="index.html" id="logo" class="dm-serif-display-regular"> Tic-Tac-Toe </a>
         </header>
-        <form id="create-game-board"><h1> Choose the game mode or <input id="input-create-game-board" type="text" placeholder="create"
-            autocomplete="off"> your own! </form></h1>
+        <form id="create-game-board">
+            <h1> Choose the game mode or <input id="input-create-game-board" type="text" placeholder="create"
+            autocomplete="off"> your own!
+            <span id="boardIsHuge" class="hidden"> please do not create a game board that is too big <br>
+            (no more than 5) </span> 
+        </form></h1>
         <section class="game-mode">
             <button id="game-mode-2-2"  title="2-2" style="background-image: url('img/2-2-game-mode.png');"></button>
             <button id="game-mode-3-3" title="3-3" style="background-image: url('img/3-3-game-mode.jpg');"></button>

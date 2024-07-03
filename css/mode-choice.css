@@ -18,6 +18,7 @@
 form {
     font-size: 1.7vmin;
     margin: auto;
+    text-align: center;
 }
 
 .game-mode button {
@@ -66,9 +67,24 @@ form {
     40%, 60% {
       transform: translateX(2px);
     }
-  }
+}
 
-  .shake {
-    animation: shake 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) both;
-  }
+.shake {
+  animation: shake 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) both;
+}
    
+.hidden {
+  display: none;
+}
+
+.shown {
+  display: block;
+}
+
+#boardIsHuge {
+  color: red;
+  margin: auto;
+  font-size: 1.4vmin;
+  margin: 2%;
+  opacity: 0.8;
+}
