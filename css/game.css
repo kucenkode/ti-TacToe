@@ -4,7 +4,7 @@
 
 .wrapper {
     display: grid;
-    grid-template-rows: 10vh 90vh;
+    grid-template-rows: 10vh 10vh 80vh;
     width: 100%;
     max-width: 1728px;
     margin: auto;
@@ -30,6 +30,7 @@
     width: 75vmin;
     height: 75vmin;
     margin: auto;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
 }
 
 .innerBoard {
@@ -45,5 +46,24 @@
 .innerCell {
     background-size: contain;
     background-repeat: no-repeat;
-    border: 1px solid black;
+    border: 1px solid #f0b75b;
+}
+
+#container-buttons-to-select-cross-or-circle {
+    margin: auto;
+}
+
+.button-cross-or-circle {
+    background-image: url(../img/cross.png);
+    background-position: center;
+    height: 5vh;
+    border: 2px solid #ff719e;
+
+    &:hover {
+        box-shadow: 0 0 5px 5px #ff719e;
+    }
+}
+
+.circle {
+    background-image: url(../img/circle.png) !important;
 }
