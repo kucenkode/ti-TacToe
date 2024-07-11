@@ -2,12 +2,12 @@
     //Функция создает поле заданного пользователем размера
     function getTheSizeOfPlayingBoard() {
         const input = document.querySelector('#input-create-game-board');
-        if (input.value.trim() && !(isNaN(input.value.trim())) && input.value.trim() <= 5) {
+        if (input.value.trim() && !(isNaN(input.value.trim())) && input.value.trim() <= 5 && input.value.trim() > 1) {
             sessionStorage.setItem('sizeOfBoard', input.value);
             location.href = "game.html";
         } else {
-            //Если создают слишком большое поле, то появляется предупреждение
-            if (input.value.trim() > 5) document.querySelector("#boardIsHuge").className = 'shown';
+            //Если создают слишком большое или маленькое поле, то появляется предупреждение
+            if (input.value.trim() > 5 || input.value.trim() <= 1) document.querySelector("#boardIsHuge").className = 'shown';
 
             input.classList.add('shake');
             setTimeout(() => {

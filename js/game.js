@@ -34,14 +34,14 @@
         }
     }
 
-    //Функция окрашивает игровое поле
+    /* Функция окрашивает игровое поле */
     function randomColor(){
         let hue = Math.floor(Math.random() * 15) + 30;
         let color = "hsl(" + hue + ", 100%, 75%)";
         return color;
     }
     
-    //Выбор чем ходить: крестиком или ноликом
+    /* Выбор чем ходить: крестиком или ноликом */
     function changeCharactersOnTheBoard() {
         const buttonCrossOrCircle = document.querySelector('.button-cross-or-circle');
 
@@ -54,22 +54,55 @@
         });
     }
 
-    //Ход игрока
-    function makeAMove(callback) {
-        if(event.target.className === "innerCell" && event.target.style.backgroundImage === "") {
-            event.target.style.backgroundImage = firstPlayer;
-            //checkIfWin();
+    /* Ход игрока */ 
+    let availableMainCellToMove = null;
+
+    function makeAMove() {
+        const availableMainCells = document.querySelectorAll('.mainCell');
+        const targetInnerCells = event.target.closest('table').querySelectorAll('.innerCell');
+
+        //Делаем ход
+        if (event.target.className === "innerCell" && event.target.style.backgroundImage === "") {  
+            //Проверяем пустое ли поле 
+            const checkIfBoardIsNotEmpty = Array.from(document.querySelectorAll('.innerCell')).some((cell) => cell.style.backgroundImage !== "");
+            if (checkIfBoardIsNotEmpty) {
+                if (event.target.closest('.mainCell') === availableMainCellToMove) {
+                    event.target.style.backgroundImage = firstPlayer;
+                    availableMainCellToMove.style.boxShadow = 'none';
+                } else return null;
+            } else event.target.style.backgroundImage = firstPlayer;
+            
+            checkIfWin(); //Проверяем победил ли кто-то
 
             //Теперь ходит бот
-            setTimeout (callback, 400);
+            setTimeout (() => {
+                makeBotMove(availableMainCellToMove);
+            }, 400); 
         } 
+
+        //Перемещаем availableMainCellToMove
+        // Для этого проходимся по всем ячейкам дочернего поля до ячейки, на которую нажали
+        for (let i = 0; i < targetInnerCells.length; i++) {
+            // если дошли до нужной ячейки
+            if (targetInnerCells[i] === event.target) {
+                // то проходимся по всем ячейкам основного поля
+                for (let j = 0; j < availableMainCells.length; j++) {
+                    // если нашли ячейку с тем же индексом, то ограничиваем ход ею
+                    if (j === i) {
+                        availableMainCellToMove = availableMainCells[j];
+                        availableMainCells[j].style.boxShadow = '0 0 5px 5px #ff719e';
+                    } else {
+                        availableMainCells[j].style.boxShadow = 'none';
+                    }
+                }
+            }
+        }
     }
 
-    // Ход бота
-    function makeBotMove() {
-        const innerCells = document.querySelectorAll('.innerCell');
-        const emptyCells = Array.from(innerCells).filter((cell) => cell.style.backgroundImage === "");
-
+    /* Ход бота */
+    function makeBotMove(availableMainCellToMove) {
+        const emptyCells = Array.from(availableMainCellToMove.querySelectorAll('.innerCell')).filter((cell) => cell.style.backgroundImage === "");
+        
         if (emptyCells.length > 0) {
             const randomIndex = Math.floor(Math.random() * emptyCells.length);
             const botCell = emptyCells[randomIndex];
@@ -77,66 +110,9 @@
         }
     }
 
-    //Победа
-    /*function checkIfWin() {
-        const board = document.querySelector('.board');
-        const rowOfMainBoard = board.querySelectorAll('.rowOfMainBoard');
-        const innerBoards = Array.from(rowOfMainBoard).flatMap(row => Array.from(row.querySelectorAll('.innerBoard')));
-    
-        // Проверяем строки
-        for (const innerBoard of innerBoards) {
-            const rows = Array.from(innerBoard.querySelectorAll('.rowOfInnerBoard'));
-            for (const row of rows) {
-                if (Array.from(row.querySelectorAll('.innerCell')).every(cell => cell.style.backgroundImage === firstPlayer)) {
-                    alert('Вы победили!');
-                    return;
-                }
-            }
-        }
-    
-        // Проверяем столбцы
-        for (let i = 0; i < rowOfMainBoard[0].querySelectorAll('.innerBoard').length; i++) {
-            let hasWin = true;
-            for (const row of rowOfMainBoard) {
-                const cell = row.querySelectorAll('.innerBoard')[i].querySelectorAll('.innerCell')[0];
-                if (cell.style.backgroundImage !== firstPlayer) {
-                    hasWin = false;
-                    break;
-                }
-            }
-            if (hasWin) {
-                alert('Вы победили!');
-                return;
-            }
-        }
-    
-        // Проверяем диагонали
-        let hasWin = true;
-        for (let i = 0; i < rowOfMainBoard.length; i++) {
-            const cell = rowOfMainBoard[i].querySelectorAll('.innerBoard')[i].querySelectorAll('.innerCell')[0];
-            if (cell.style.backgroundImage !== firstPlayer) {
-                hasWin = false;
-                break;
-            }
-        }
-        if (hasWin) {
-            alert('Вы победили!');
-            return;
-        }
-    
-        hasWin = true;
-        for (let i = 0; i < rowOfMainBoard.length; i++) {
-            const cell = rowOfMainBoard[i].querySelectorAll('.innerBoard')[rowOfMainBoard.length - 1 - i].querySelectorAll('.innerCell')[0];
-            if (cell.style.backgroundImage !== firstPlayer) {
-                hasWin = false;
-                break;
-            }
-        }
-        if (hasWin) {
-            alert('Вы победили!');
-            return;
-        }
-    }*/
+    /* Победа */
+    function checkIfWin() {
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
 
@@ -147,7 +123,7 @@
         const board = document.querySelector('.board');
         board.addEventListener('click', (event) => {
             event.preventDefault();
-            makeAMove(makeBotMove);
+            makeAMove();
         });
 
         const buttonCrossOrCircle = document.querySelector('.button-cross-or-circle');
