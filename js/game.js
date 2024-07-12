@@ -41,43 +41,39 @@
         return color;
     }
     
-    /* Выбор чем ходить: крестиком или ноликом */
-    function changeCharactersOnTheBoard() {
-        const buttonCrossOrCircle = document.querySelector('.button-cross-or-circle');
+    /* Смена игрока */
+    let playerNumber = 3;
 
-        firstPlayer = (buttonCrossOrCircle.classList.contains('circle')) ? 'url("img/circle.png")' : 'url("img/cross.png")';
-        secondPlayer = (buttonCrossOrCircle.classList.contains('circle')) ? 'url("img/cross.png")' : 'url("img/circle.png")';
-        
-        document.querySelectorAll('.innerCell').forEach((cell) => {
-            if (cell.style.backgroundImage === secondPlayer) cell.style.backgroundImage = firstPlayer;
-            else if (cell.style.backgroundImage === firstPlayer) cell.style.backgroundImage = secondPlayer;
-        });
+    function changeCharacter() {
+        const crossOrCircle = document.querySelector('.cross-or-circle');
+
+        //Меняем наверху тоже
+        crossOrCircle.classList.toggle('circle');
+
+        //Переключаем игрока
+        playerNumber++; 
     }
 
     /* Ход игрока */ 
     let availableMainCellToMove = null;
-
+    
     function makeAMove() {
         const availableMainCells = document.querySelectorAll('.mainCell');
         const targetInnerCells = event.target.closest('table').querySelectorAll('.innerCell');
 
         //Делаем ход
         if (event.target.className === "innerCell" && event.target.style.backgroundImage === "") {  
+            changeCharacter();
             //Проверяем пустое ли поле 
             const checkIfBoardIsNotEmpty = Array.from(document.querySelectorAll('.innerCell')).some((cell) => cell.style.backgroundImage !== "");
             if (checkIfBoardIsNotEmpty) {
                 if (event.target.closest('.mainCell') === availableMainCellToMove) {
-                    event.target.style.backgroundImage = firstPlayer;
+                    event.target.style.backgroundImage = (playerNumber % 2 === 0) ? firstPlayer : secondPlayer;
                     availableMainCellToMove.style.boxShadow = 'none';
                 } else return null;
             } else event.target.style.backgroundImage = firstPlayer;
             
             checkIfWin(); //Проверяем победил ли кто-то
-
-            //Теперь ходит бот
-            setTimeout (() => {
-                makeBotMove(availableMainCellToMove);
-            }, 400); 
         } 
 
         //Перемещаем availableMainCellToMove
@@ -99,19 +95,9 @@
         }
     }
 
-    /* Ход бота */
-    function makeBotMove(availableMainCellToMove) {
-        const emptyCells = Array.from(availableMainCellToMove.querySelectorAll('.innerCell')).filter((cell) => cell.style.backgroundImage === "");
-        
-        if (emptyCells.length > 0) {
-            const randomIndex = Math.floor(Math.random() * emptyCells.length);
-            const botCell = emptyCells[randomIndex];
-            botCell.style.backgroundImage = secondPlayer;
-        }
-    }
-
     /* Победа */
     function checkIfWin() {
+        
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -124,12 +110,6 @@
         board.addEventListener('click', (event) => {
             event.preventDefault();
             makeAMove();
-        });
-
-        const buttonCrossOrCircle = document.querySelector('.button-cross-or-circle');
-        buttonCrossOrCircle.addEventListener('click', () => {
-            buttonCrossOrCircle.classList.toggle('circle');
-            changeCharactersOnTheBoard();
         });
     });
 }) ()
