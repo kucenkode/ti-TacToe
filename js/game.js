@@ -57,26 +57,11 @@
     /* Ход игрока */ 
     let availableMainCellToMove = null;
     
-    function makeAMove() {
+    // Перемещаем availableMainCellToMove
+    function changeavailableMainCellToMovePosition() {
         const availableMainCells = document.querySelectorAll('.mainCell');
         const targetInnerCells = event.target.closest('table').querySelectorAll('.innerCell');
 
-        //Делаем ход
-        if (event.target.className === "innerCell" && event.target.style.backgroundImage === "") {  
-            changeCharacter();
-            //Проверяем пустое ли поле 
-            const checkIfBoardIsNotEmpty = Array.from(document.querySelectorAll('.innerCell')).some((cell) => cell.style.backgroundImage !== "");
-            if (checkIfBoardIsNotEmpty) {
-                if (event.target.closest('.mainCell') === availableMainCellToMove) {
-                    event.target.style.backgroundImage = (playerNumber % 2 === 0) ? firstPlayer : secondPlayer;
-                    availableMainCellToMove.style.boxShadow = 'none';
-                } else return null;
-            } else event.target.style.backgroundImage = firstPlayer;
-            
-            checkIfWin(); //Проверяем победил ли кто-то
-        } 
-
-        //Перемещаем availableMainCellToMove
         // Для этого проходимся по всем ячейкам дочернего поля до ячейки, на которую нажали
         for (let i = 0; i < targetInnerCells.length; i++) {
             // если дошли до нужной ячейки
@@ -93,6 +78,24 @@
                 }
             }
         }
+    }
+    
+    //Делаем ход
+    function makeAMove() {
+        if (event.target.className === "innerCell" && event.target.style.backgroundImage === "") {  
+            changeCharacter();
+            //Проверяем пустое ли поле 
+            const checkIfBoardIsNotEmpty = Array.from(document.querySelectorAll('.innerCell')).some((cell) => cell.style.backgroundImage !== "");
+            if (checkIfBoardIsNotEmpty) {
+                if (event.target.closest('.mainCell') === availableMainCellToMove) {
+                    event.target.style.backgroundImage = (playerNumber % 2 === 0) ? firstPlayer : secondPlayer;
+                    availableMainCellToMove.style.boxShadow = 'none';
+                } else return null;
+            } else event.target.style.backgroundImage = firstPlayer;
+            
+            checkIfWin(); //Проверяем победил ли кто-то
+        } 
+        changeavailableMainCellToMovePosition();
     }
 
     /* Победа */
