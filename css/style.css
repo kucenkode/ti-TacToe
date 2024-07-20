@@ -26,6 +26,10 @@ body {
     --logo-color: #ef2666;
     --text-color: #ff719e;
     --bg-color: #ffe6e3;
+
+    /* Кнопки для старта, рестарта и завершения игры */
+    --btn-color: #ff417e;
+    --btn-color-hover: #dd2761;
 }
 
 .dm-serif-display-regular {
