@@ -64,6 +64,7 @@
         const targetInnerCells = event.target.closest('table').querySelectorAll('.innerCell');
 
         // Для этого проходимся по всем ячейкам дочернего поля до ячейки, на которую нажали
+
         for (let i = 0; i < targetInnerCells.length; i++) {
             // если дошли до нужной ячейки
             if (targetInnerCells[i] === event.target) {
@@ -83,6 +84,8 @@
     
     //Делаем ход
     function makeAMove() {
+        const popupIfPlayerWin = document.querySelector('.popup');
+
         if (event.target.className === "innerCell" && event.target.style.backgroundImage === "") {  
             //Проверяем пустое ли поле 
             const checkIfBoardIsNotEmpty = Array.from(document.querySelectorAll('.innerCell')).some((cell) => cell.style.backgroundImage !== "");
@@ -97,7 +100,8 @@
                 changeCharacter();
             }
             
-            checkIfWin(); //Проверяем победил ли кто-то
+            const win = checkIfWin(); //Проверяем победил ли кто-то
+            if (win) popupIfPlayerWin.classList.toggle('shown');
         } 
         changeavailableMainCellToMovePosition();
     }
@@ -105,13 +109,19 @@
     /* Победа */
     function checkIfWin() {
         const popupIfPlayerWin = document.querySelector('.popup');
+
         const rows = checkIfWinRows();
         const columns = checkIfWinColumn();
         const diagonal = checkIfWinDiagonal();
+        const nobodyWin = draw();
 
-        if (rows || columns || diagonal) {
-            popupIfPlayerWin.classList.add('shown');
-        }
+        popupIfPlayerWin.querySelector('span').textContent = (rows || columns || diagonal) 
+        //если один из игроков победил
+        ? (event.target.style.backgroundImage === firstPlayer) ? 'First player is a winner!' : 'Second player is a winner!' 
+        //ничья
+        : `It's a draw!`;
+
+        return rows || columns || diagonal || nobodyWin;
     }
 
     //Ряды
@@ -234,10 +244,8 @@
         for (let i = 0; i < boardSize; i++) {
             // Получаем диагональ основной сетки 
             const mainCell = mainRowsOfBoard[i].querySelectorAll('.mainCell')[i];
-
             // Получаем диагональ внутренней сетки
             const innerDiagonal = getInnerDiagonal(mainCell, true); // передаем true для нисходящей диагонали
-
             // Добавляем диагональ внутренней сетки в массив
             descendingDiagonal.push(...innerDiagonal);
         }
@@ -245,10 +253,8 @@
         // Проверяем восходящую диагональ
         for (let i = 0; i < boardSize; i++) {
             const mainCell = mainRowsOfBoard[i].querySelectorAll('.mainCell')[boardSize - 1 - i];
-
             // Получаем диагональ внутренней сетки
             const innerDiagonal = getInnerDiagonal(mainCell, false); // передаем false для восходящей диагонали
-
             // Добавляем диагональ внутренней сетки в массив
             ascendingDiagonal.push(...innerDiagonal);
         }
@@ -281,6 +287,10 @@
         }
 
         return innerDiagonal;
+    }
+
+    function draw() {
+        return Array.from(document.querySelectorAll('.innerCell')).every((cell) => cell.style.backgroundImage !== "");
     }
 
     document.addEventListener('DOMContentLoaded', () => {
