@@ -46,34 +46,30 @@
     }
     
     /* Смена игрока */
-    let playerNumber = 1;
+    let playerNumber = 0;
     function changeCharacter() {
-        const crossOrCircle = document.querySelector('.cross-or-circle');
-        //Меняем наверху тоже
-        crossOrCircle.classList.toggle('circle');
-        //Переключаем игрока
-        playerNumber++; 
+        return (event.target.closest('.mainCell') === availableMainCellToMove && 
+            event.target.style.backgroundImage === "") ? ++playerNumber : null;
     }
 
     /* Ход игрока */ 
-    let availableMainCellToMove = null;
-    
     // Перемещаем availableMainCellToMove
+    let availableMainCellToMove = null;
     function changeavailableMainCellToMovePosition() {
-        const availableMainCells = document.querySelectorAll('.mainCell');
-        const targetInnerCells = event.target.closest('table').querySelectorAll('.innerCell');
+        const availableMainCells = Array.from(document.querySelectorAll('.mainCell'));
+        const targetInnerCells = Array.from(event.target.closest('table').querySelectorAll('.innerCell'));
 
         // Для этого проходимся по всем ячейкам дочернего поля до ячейки, на которую нажали
-        for (let i = 0; i < targetInnerCells.length; i++) {
+        targetInnerCells.forEach(currentInnerCell => {
             // если дошли до нужной ячейки
-            if (targetInnerCells[i] === event.target) {
+            if (currentInnerCell === event.target) {
                 // то проходимся по всем ячейкам основного поля
-                for (let j = 0; j < availableMainCells.length; j++) {
-                    // если нашли ячейку с тем же индексом, то ограничиваем ход ею
-                    if (j === i) {  
-                        if (Array.from(availableMainCells[j].querySelectorAll('.innerCell')).some((cell) => cell.style.backgroundImage === "")) {
-                            availableMainCellToMove = availableMainCells[j];
-                            availableMainCells[j].style.boxShadow = '0 0 5px 5px #ff719e';
+                availableMainCells.forEach(currentMainCell => {
+                     // если нашли ячейку с тем же индексом, то ограничиваем ход ею
+                    if (availableMainCells.indexOf(currentMainCell) === targetInnerCells.indexOf(currentInnerCell)) {  
+                        //если в выбранной ячейке есть место для хода
+                        if (Array.from(currentMainCell.querySelectorAll('.innerCell')).some((cell) => cell.style.backgroundImage === "")) {
+                            availableMainCellToMove = currentMainCell;
                         } else {
                             // Получаем ячейки, в которых осталось место для хода
                             const emptyCells = Array.from(availableMainCells).filter((cell) => Array.from(cell.querySelectorAll('.innerCell')).some((innerCell) => 
@@ -82,36 +78,37 @@
                             const randomIndex = Math.floor(Math.random() * emptyCells.length);
                             //теперь эта ячейка - область для хода
                             availableMainCellToMove = emptyCells[randomIndex];
-                            availableMainCellToMove.style.boxShadow = '0 0 5px 5px #ff719e';
                         }
+                        availableMainCellToMove.style.boxShadow = '0 0 5px 5px #ff719e';
                     } 
-                }
+                })
             }
-        }
+        })
     }
     
     //Делаем ход
     function makeAMove() {
         const popupIfPlayerWin = document.querySelector('.popup');
+        const player = changeCharacter();
 
         if (event.target.className === "innerCell" && event.target.style.backgroundImage === "") {  
             //Проверяем пустое ли поле 
-            const checkIfBoardIsNotEmpty = Array.from(document.querySelectorAll('.innerCell')).some((cell) => cell.style.backgroundImage !== "");
-            if (checkIfBoardIsNotEmpty) {
-                if (event.target.closest('.mainCell') === availableMainCellToMove) {
-                    changeCharacter();
-                    event.target.style.backgroundImage = (playerNumber % 2 === 0) ? firstPlayer : secondPlayer;
-                    availableMainCellToMove.style.boxShadow = 'none';
-                } else return null;
-            } else {
+            const boardIsEmpty = Array.from(document.querySelectorAll('.innerCell')).every((cell) => cell.style.backgroundImage === "");
+            if (boardIsEmpty) {
+                //если пустое, то ходить можно в любом месте поля
                 event.target.style.backgroundImage = firstPlayer;
-                changeCharacter();
+            } else {
+                 //Если не пустое, то игрок должен ходить именно в выделенной ячейке
+                if (event.target.closest('.mainCell') === availableMainCellToMove) {
+                    event.target.style.backgroundImage = (player % 2 === 0) ? firstPlayer : secondPlayer;
+                    availableMainCellToMove.style.boxShadow = 'none';
+                } else return null; // иначе ничего не произойдет
             }
-            
-            const win = checkIfWin(); //Проверяем победил ли кто-то
-            if (win) popupIfPlayerWin.classList.toggle('shown');
-            
-            changeavailableMainCellToMovePosition();
+            document.querySelector('.cross-or-circle').classList.toggle('circle');
+
+            //Проверяем победил ли кто-то
+            const win = checkIfWin(); 
+            (win) ? popupIfPlayerWin.classList.toggle('shown') : changeavailableMainCellToMovePosition();
         }  
     }
 
@@ -131,6 +128,43 @@
         : `It's a draw!`;
 
         return rows || columns || diagonal || nobodyWin;
+    }
+
+    //Функция находит индексы ячеек, на которые нажали 
+    function findEventTargetIndex(targetMainCellIndex = null, targetInnerCellIndex = null) {
+        const targetInnerCell = event.target;
+
+        //Определяем индекс основной ячейки (targetMainCellIndex):
+        //проходимся по рядам основной сетки
+        document.querySelectorAll('.rowOfMainBoard').forEach(currentMainRow => {
+            //из каждого ряда берем ячейки
+            const eachMainRowCells = Array.from(currentMainRow.querySelectorAll('.mainCell'));
+            //находим основную ячейку, на которую нажали и определяем её индекс
+            if (eachMainRowCells.includes(targetInnerCell.closest('.mainCell'))) {
+                targetMainCellIndex = eachMainRowCells.indexOf(targetInnerCell.closest('.mainCell'))
+            }
+        })
+
+        //Определяем индекс дочерней ячейки (targetInnerCellIndex):
+        //проходимся по ячейкам основной сетки
+        document.querySelectorAll('.mainCell').forEach(currentMainCell => {
+            //из каждой основной ячейки берем ряды дочерней
+            const innerRows = currentMainCell.querySelectorAll('.rowOfInnerBoard');
+            innerRows.forEach(currentInnerRow => {
+                //и из них берем ячейки дочерней сетки
+                const innerRowCells = Array.from(currentInnerRow.querySelectorAll('.innerCell'));
+                innerRowCells.forEach(currentRowCell => {
+                    if (currentRowCell === event.target) {
+                        targetInnerCellIndex = innerRowCells.indexOf(currentRowCell);
+                    }
+                })
+            })
+        })
+
+        return {
+            targetMainCellIndex,
+            targetInnerCellIndex
+        }
     }
 
     //Ряды
@@ -176,43 +210,6 @@
 
         return (allCellsRow.every((cell) => cell.style.backgroundImage === firstPlayer || 
             (allCellsRow.every((cell) => cell.style.backgroundImage === secondPlayer))));
-    }
-
-    //Функция находит индексы ячеек, на которые нажали 
-    function findEventTargetIndex(targetMainCellIndex = null, targetInnerCellIndex = null) {
-        const targetInnerCell = event.target;
-
-        //Определяем индекс основной ячейки (targetMainCellIndex):
-        //проходимся по рядам основной сетки
-        document.querySelectorAll('.rowOfMainBoard').forEach(currentMainRow => {
-            //из каждого ряда берем ячейки
-            const eachMainRowCells = Array.from(currentMainRow.querySelectorAll('.mainCell'));
-            //находим основную ячейку, на которую нажали и определяем её индекс
-            if (eachMainRowCells.includes(targetInnerCell.closest('.mainCell'))) {
-                targetMainCellIndex = eachMainRowCells.indexOf(targetInnerCell.closest('.mainCell'))
-            }
-        })
-
-        //Определяем индекс дочерней ячейки (targetInnerCellIndex):
-        //проходимся по ячейкам основной сетки
-        document.querySelectorAll('.mainCell').forEach(currentMainCell => {
-            //из каждой основной ячейки берем ряды дочерней
-            const innerRows = currentMainCell.querySelectorAll('.rowOfInnerBoard');
-            innerRows.forEach(currentInnerRow => {
-                //и из них берем ячейки дочерней сетки
-                const innerRowCells = Array.from(currentInnerRow.querySelectorAll('.innerCell'));
-                innerRowCells.forEach(currentRowCell => {
-                    if (currentRowCell === event.target) {
-                        targetInnerCellIndex = innerRowCells.indexOf(currentRowCell);
-                    }
-                })
-            })
-        })
-
-        return {
-            targetMainCellIndex,
-            targetInnerCellIndex
-        }
     }
 
     //Столбцы
