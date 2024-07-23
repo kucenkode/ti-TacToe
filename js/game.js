@@ -70,12 +70,21 @@
                 // то проходимся по всем ячейкам основного поля
                 for (let j = 0; j < availableMainCells.length; j++) {
                     // если нашли ячейку с тем же индексом, то ограничиваем ход ею
-                    if (j === i) {
-                        availableMainCellToMove = availableMainCells[j];
-                        availableMainCells[j].style.boxShadow = '0 0 5px 5px #ff719e';
-                    } else {
-                        availableMainCells[j].style.boxShadow = 'none';
-                    }
+                    if (j === i) {  
+                        if (Array.from(availableMainCells[j].querySelectorAll('.innerCell')).some((cell) => cell.style.backgroundImage === "")) {
+                            availableMainCellToMove = availableMainCells[j];
+                            availableMainCells[j].style.boxShadow = '0 0 5px 5px #ff719e';
+                        } else {
+                            // Получаем ячейки, в которых осталось место для хода
+                            const emptyCells = Array.from(availableMainCells).filter((cell) => Array.from(cell.querySelectorAll('.innerCell')).some((innerCell) => 
+                                innerCell.style.backgroundImage === ""));
+                            //И выбираем любую
+                            const randomIndex = Math.floor(Math.random() * emptyCells.length);
+                            //теперь эта ячейка - область для хода
+                            availableMainCellToMove = emptyCells[randomIndex];
+                            availableMainCellToMove.style.boxShadow = '0 0 5px 5px #ff719e';
+                        }
+                    } 
                 }
             }
         }
