@@ -64,7 +64,6 @@
         const targetInnerCells = event.target.closest('table').querySelectorAll('.innerCell');
 
         // Для этого проходимся по всем ячейкам дочернего поля до ячейки, на которую нажали
-
         for (let i = 0; i < targetInnerCells.length; i++) {
             // если дошли до нужной ячейки
             if (targetInnerCells[i] === event.target) {
@@ -102,8 +101,9 @@
             
             const win = checkIfWin(); //Проверяем победил ли кто-то
             if (win) popupIfPlayerWin.classList.toggle('shown');
-        } 
-        changeavailableMainCellToMovePosition();
+            
+            changeavailableMainCellToMovePosition();
+        }  
     }
 
     /* Победа */
