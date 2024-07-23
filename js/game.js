@@ -107,9 +107,9 @@
         const popupIfPlayerWin = document.querySelector('.popup');
         const rows = checkIfWinRows();
         const columns = checkIfWinColumn();
-        checkIfWinDiagonal();
+        const diagonal = checkIfWinDiagonal();
 
-        if (rows || columns) {
+        if (rows || columns || diagonal) {
             popupIfPlayerWin.classList.add('shown');
         }
     }
@@ -156,7 +156,7 @@
         })
 
         return (allCellsRow.every((cell) => cell.style.backgroundImage === firstPlayer || 
-            cell.style.backgroundImage === secondPlayer));
+            (allCellsRow.every((cell) => cell.style.backgroundImage === secondPlayer))));
     }
 
     //Функция находит индексы ячеек, на которые нажали 
@@ -221,15 +221,66 @@
             })
         })
 
-        return (allInnerCellsColumn.every((cell) => cell.style.backgroundImage === firstPlayer || 
-            cell.style.backgroundImage === secondPlayer));
+        return (allInnerCellsColumn.every((cell) => cell.style.backgroundImage === firstPlayer) || 
+            (allInnerCellsColumn.every((cell) => cell.style.backgroundImage === secondPlayer)));
     }
 
-    //по диагонали - доделать
-    function checkIfWinDiagonal(wholeBoardDiagonal = []) {
-        const firstMainRowOfBoard = document.querySelector('.rowOfMainBoard');
-        const rightSideOfBoard = firstMainRowOfBoard.firstChild.querySelector('.rowOfInnerBoard').firstChild;
-        const leftSideOfBoard = firstMainRowOfBoard.lastChild.querySelector('.rowOfInnerBoard').lastChild;
+    //по диагонали
+    function checkIfWinDiagonal(ascendingDiagonal = [], descendingDiagonal = []) {
+        const mainRowsOfBoard = document.querySelectorAll('.rowOfMainBoard');
+        const boardSize = sessionStorage.getItem('sizeOfBoard');
+
+        // Проверяем нисходящую диагональ
+        for (let i = 0; i < boardSize; i++) {
+            // Получаем диагональ основной сетки 
+            const mainCell = mainRowsOfBoard[i].querySelectorAll('.mainCell')[i];
+
+            // Получаем диагональ внутренней сетки
+            const innerDiagonal = getInnerDiagonal(mainCell, true); // передаем true для нисходящей диагонали
+
+            // Добавляем диагональ внутренней сетки в массив
+            descendingDiagonal.push(...innerDiagonal);
+        }
+
+        // Проверяем восходящую диагональ
+        for (let i = 0; i < boardSize; i++) {
+            const mainCell = mainRowsOfBoard[i].querySelectorAll('.mainCell')[boardSize - 1 - i];
+
+            // Получаем диагональ внутренней сетки
+            const innerDiagonal = getInnerDiagonal(mainCell, false); // передаем false для восходящей диагонали
+
+            // Добавляем диагональ внутренней сетки в массив
+            ascendingDiagonal.push(...innerDiagonal);
+        }
+
+       return (descendingDiagonal.every((cell) => cell.style.backgroundImage === firstPlayer || 
+            (descendingDiagonal.every((cell) => cell.style.backgroundImage === secondPlayer)))) 
+            
+        || (ascendingDiagonal.every((cell) => cell.style.backgroundImage === firstPlayer || 
+        (ascendingDiagonal.every((cell) => cell.style.backgroundImage === secondPlayer))));
+    }
+
+    // Получение диагонали внутренней сетки
+    function getInnerDiagonal(mainCell, isDescending) {
+        const innerDiagonal = [];
+        const innerBoard = mainCell.querySelector('.innerBoard');
+        const innerRows = innerBoard.querySelectorAll('.rowOfInnerBoard');
+
+        if (isDescending) {
+            // Нисходящая диагональ
+            for (let innerRowIndex = 0; innerRowIndex < innerRows.length; innerRowIndex++) {
+                const innerCell = innerRows[innerRowIndex].querySelectorAll('.innerCell')[innerRowIndex];
+                innerDiagonal.push(innerCell);
+            }
+        } else {
+            // Восходящая диагональ
+            for (let innerRowIndex = 0; innerRowIndex < innerRows.length; innerRowIndex++) {
+                const innerCell = innerRows[innerRowIndex].querySelectorAll('.innerCell')[innerRows.length - 1 - innerRowIndex];
+                innerDiagonal.push(innerCell);
+            }
+        }
+
+        return innerDiagonal;
     }
 
     document.addEventListener('DOMContentLoaded', () => {
