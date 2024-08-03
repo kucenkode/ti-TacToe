@@ -1,6 +1,6 @@
 (function () {
-    let firstPlayer = 'url("img/cross.png")';
-    let secondPlayer = 'url("img/circle.png")';
+    let firstPlayer = 'url("img/players/cross.png")';
+    let secondPlayer = 'url("img/players/circle.png")';
 
     function createGameBoard() {
         const sizeOfBoard = sessionStorage.getItem('sizeOfBoard');
@@ -119,7 +119,7 @@
         const rows = checkIfWinRows();
         const columns = checkIfWinColumn();
         const diagonal = checkIfWinDiagonal();
-        const nobodyWin = draw();
+        const noEmptyCellsLeft = draw();
 
         popupIfPlayerWin.querySelector('span').textContent = (rows || columns || diagonal) 
         //если один из игроков победил
@@ -127,7 +127,7 @@
         //ничья
         : `It's a draw!`;
 
-        return rows || columns || diagonal || nobodyWin;
+        return rows || columns || diagonal || noEmptyCellsLeft;
     }
 
     //Функция находит индексы ячеек, на которые нажали 
@@ -200,7 +200,6 @@
                 }
             }
         }
-
         //Получаем все ячейки wholeBoardRow
         const allCellsRow = [];
         wholeBoardRow.forEach(innerRow => {
@@ -208,8 +207,8 @@
             innerRowCells.forEach(cell => allCellsRow.push(cell));
         })
 
-        return (allCellsRow.every((cell) => cell.style.backgroundImage === firstPlayer || 
-            (allCellsRow.every((cell) => cell.style.backgroundImage === secondPlayer))));
+        return (allCellsRow.every((cell) => cell.style.backgroundImage === firstPlayer) || 
+            (allCellsRow.every((cell) => cell.style.backgroundImage === secondPlayer)));
     }
 
     //Столбцы
@@ -237,8 +236,10 @@
             })
         })
 
-        return (allInnerCellsColumn.every((cell) => cell.style.backgroundImage === firstPlayer) || 
-            (allInnerCellsColumn.every((cell) => cell.style.backgroundImage === secondPlayer)));
+        const checkIfWinMainColumn =  (allInnerCellsColumn.every((cell) => cell.style.backgroundImage === firstPlayer) || 
+        (allInnerCellsColumn.every((cell) => cell.style.backgroundImage === secondPlayer)))
+
+        return checkIfWinMainColumn;
     }
 
     //по диагонали
@@ -251,7 +252,7 @@
             // Получаем диагональ основной сетки 
             const mainCell = mainRowsOfBoard[i].querySelectorAll('.mainCell')[i];
             // Получаем диагональ внутренней сетки
-            const innerDiagonal = getInnerDiagonal(mainCell, true); // передаем true для нисходящей диагонали
+            const innerDiagonal = getInnerDiagonal(mainCell, true); // передаем true для нисходящей диагонали 
             // Добавляем диагональ внутренней сетки в массив
             descendingDiagonal.push(...innerDiagonal);
         }

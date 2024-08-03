@@ -112,12 +112,12 @@
     box-shadow: 0 5px 5px rgba(0,0,0,0.2);
     background-size: contain;
     background-repeat: no-repeat;
-    background-image: url(../img/cross.png);
+    background-image: url(../img/players/cross.png);
     background-position: center;
     border: 2px solid #ff719e;
     cursor: pointer;
 }
 
 .circle {
-    background-image: url(../img/circle.png) !important;
+    background-image: url(../img/players/circle.png) !important;
 }
