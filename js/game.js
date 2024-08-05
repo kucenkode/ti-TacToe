@@ -1,6 +1,7 @@
 (function () {
     let firstPlayer = 'url("img/players/cross.png")';
     let secondPlayer = 'url("img/players/circle.png")';
+    const firstPlayerWinnings = [], secondPlayerWinnings = [];
 
     function createGameBoard() {
         const sizeOfBoard = sessionStorage.getItem('sizeOfBoard');
@@ -119,15 +120,17 @@
         const rows = checkIfWinRows();
         const columns = checkIfWinColumn();
         const diagonal = checkIfWinDiagonal();
-        const noEmptyCellsLeft = draw();
+        const noEmptyCellsLeft = compareAmountOfPlayersWinnings();
 
-        popupIfPlayerWin.querySelector('span').textContent = (rows || columns || diagonal) 
+        popupIfPlayerWin.querySelector('span').textContent = (rows || columns || diagonal || noEmptyCellsLeft.firstPlayerIsAWinner
+            || noEmptyCellsLeft.secondPlayerIsAWinner) 
         //если один из игроков победил
-        ? (event.target.style.backgroundImage === firstPlayer) ? 'First player is a winner!' : 'Second player is a winner!' 
+        ? (event.target.style.backgroundImage === firstPlayer || noEmptyCellsLeft.firstPlayerIsAWinner) ? 'First player is a winner!' : 'Second player is a winner!' 
         //ничья
         : `It's a draw!`;
 
-        return rows || columns || diagonal || noEmptyCellsLeft;
+        return rows || columns || diagonal || noEmptyCellsLeft.firstPlayerIsAWinner
+        || noEmptyCellsLeft.secondPlayerIsAWinner || noEmptyCellsLeft.draw;
     }
 
     //Функция находит индексы ячеек, на которые нажали 
@@ -296,9 +299,77 @@
         return innerDiagonal;
     }
 
-    function draw() {
-        return Array.from(document.querySelectorAll('.innerCell')).every((cell) => cell.style.backgroundImage !== "");
+    //Функция считает победы игроков в дочерних полях (полях внутри ячеек)
+    function countWinningsOfPlayersInnerCells() {
+        const targetInnerRow = event.target.closest('.rowOfInnerBoard');
+        const targetMainCell = event.target.closest('.mainCell');
+        const targetMainCellInnerRows = targetMainCell.querySelectorAll('.rowOfInnerBoard');
+      
+        /* Если в ячейке уже одержал победу один из игроков, 
+        то даже если другой игрок также достигнет победы в этой ячейке (например, выстроит крестики в ряд),
+        это не будет засчитано. */
+        if (firstPlayerWinnings.includes(targetMainCell) || secondPlayerWinnings.includes(targetMainCell)) {
+            return { firstPlayerWinnings, secondPlayerWinnings };
+        }
+      
+        //Проверяем ряд
+        const isRowWin = (player) => {
+            return Array.from(targetInnerRow.querySelectorAll('.innerCell'))
+                .every((cell) => cell.style.backgroundImage === player);
+        };
+      
+        //проверяем диагонали (восходящую и нисходящую)
+        const isDiagonalWin = (player) => {
+            //для этого собираем ячейки по диагонали
+            const ascendingDiagonal = Array.from(targetMainCellInnerRows)
+                .map((row, innerCellIndex) => row.querySelectorAll('.innerCell')[innerCellIndex]);
+            const descendingDiagonal = Array.from(targetMainCellInnerRows)
+                .map((row, innerCellIndex) => row.querySelectorAll('.innerCell')[targetMainCellInnerRows.length - 1 - innerCellIndex]);
+      
+            //а после этого проверяем диагонали на победу
+            return ascendingDiagonal.every((cell) => cell.style.backgroundImage === player) ||
+                descendingDiagonal.every((cell) => cell.style.backgroundImage === player);
+        };
+      
+        //проверяем столбец
+        const isColumnWin = (player) => {
+            const targetIndex = findEventTargetIndex();
+            //собираем ячейки с индексом, как у той, на которую нажали
+            const column = Array.from(targetMainCellInnerRows)
+                .map((row) => row.querySelectorAll('.innerCell')[targetIndex.targetInnerCellIndex]);
+            
+            return column.every((cell) => cell.style.backgroundImage === player);
+        };
+      
+        //если в ячейке победил первый игрок
+        if (isRowWin(firstPlayer) || isDiagonalWin(firstPlayer) || isColumnWin(firstPlayer)) {
+            firstPlayerWinnings.push(targetMainCell);
+        //если победил второй игрок
+        } else if (isRowWin(secondPlayer) || isDiagonalWin(secondPlayer) || isColumnWin(secondPlayer)) {
+            secondPlayerWinnings.push(targetMainCell);
+        }
+      
+        return { 
+            firstPlayerWinnings, 
+            secondPlayerWinnings 
+        };
     }
+
+    //Функция определяет победителя по количеству этих побед
+    function compareAmountOfPlayersWinnings() {
+        const amountOfPlayersWinnings = countWinningsOfPlayersInnerCells();
+        const noEmptyCellsLeft = Array.from(document.querySelectorAll('.innerCell')).every((cell) => cell.style.backgroundImage !== "");
+
+        const firstPlayerIsAWinner = (noEmptyCellsLeft && amountOfPlayersWinnings.firstPlayerWinnings.length > amountOfPlayersWinnings.secondPlayerWinnings.length);
+        const secondPlayerIsAWinner = (noEmptyCellsLeft && amountOfPlayersWinnings.firstPlayerWinnings.length < amountOfPlayersWinnings.secondPlayerWinnings.length);
+        const draw = (noEmptyCellsLeft && amountOfPlayersWinnings.firstPlayerWinnings.length === amountOfPlayersWinnings.secondPlayerWinnings.length);
+
+        return {
+            firstPlayerIsAWinner,
+            secondPlayerIsAWinner,
+            draw
+        }
+    } 
 
     document.addEventListener('DOMContentLoaded', () => {
 
